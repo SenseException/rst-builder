@@ -1,0 +1,30 @@
+#!/usr/bin/env php
+<?php
+
+use Budgegeria\RstBuild\Command;
+use Budgegeria\RstBuild\Creator;
+use Doctrine\RST\Builder;
+use Doctrine\RST\Configuration;
+use Doctrine\RST\Kernel;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+
+set_time_limit(0);
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+$input = new ArgvInput();
+
+$config = new Configuration();
+$config->abortOnError(false);
+$config->setIgnoreInvalidReferences(true);
+$config->setUseCachedMetas(false);
+$config->setFileExtension('html');
+$kernel = new Kernel($config);
+
+$application = new Application();
+$application->add(new Command(new Creator(
+    new Builder($kernel)
+)));
+$application->setDefaultCommand('create');
+$application->run($input);
